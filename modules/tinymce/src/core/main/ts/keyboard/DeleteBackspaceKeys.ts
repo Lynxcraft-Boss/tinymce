@@ -8,6 +8,7 @@ import * as BlockBoundaryDelete from '../delete/BlockBoundaryDelete';
 import * as BlockRangeDelete from '../delete/BlockRangeDelete';
 import * as CaretBoundaryDelete from '../delete/CaretBoundaryDelete';
 import * as CefDelete from '../delete/CefDelete';
+import * as DetailsDelete from '../delete/DetailsDelete';
 import * as ImageBlockDelete from '../delete/ImageBlockDelete';
 import * as InlineBoundaryDelete from '../delete/InlineBoundaryDelete';
 import * as InlineFormatDelete from '../delete/InlineFormatDelete';
@@ -30,6 +31,8 @@ const executeKeydownOverride = (editor: Editor, caret: Cell<Text | null>, evt: K
     { keyCode: VK.DELETE, action: MatchKeys.action(InlineBoundaryDelete.backspaceDelete, editor, caret, true) },
     { keyCode: VK.BACKSPACE, action: MatchKeys.action(TableDelete.backspaceDelete, editor, false) },
     { keyCode: VK.DELETE, action: MatchKeys.action(TableDelete.backspaceDelete, editor, true) },
+    { keyCode: VK.BACKSPACE, action: MatchKeys.action(DetailsDelete.backspaceDelete, editor, false) },
+    { keyCode: VK.DELETE, action: MatchKeys.action(DetailsDelete.backspaceDelete, editor, true) },
     { keyCode: VK.BACKSPACE, action: MatchKeys.action(ImageBlockDelete.backspaceDelete, editor, false) },
     { keyCode: VK.DELETE, action: MatchKeys.action(ImageBlockDelete.backspaceDelete, editor, true) },
     { keyCode: VK.BACKSPACE, action: MatchKeys.action(MediaDelete.backspaceDelete, editor, false) },
