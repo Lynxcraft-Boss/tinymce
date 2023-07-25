@@ -1,7 +1,7 @@
-import { AlloyComponent, Behaviour, Focusing, FormField, SketchSpec, Tabstopping } from '@ephox/alloy';
+import { AlloyComponent, AlloyEvents, Behaviour, Focusing, FormField, NativeEvents, SketchSpec, SystemEvents, Tabstopping } from '@ephox/alloy';
 import { Dialog } from '@ephox/bridge';
 import { Cell, Optional, Type } from '@ephox/katamari';
-import { Attribute, SugarElement } from '@ephox/sugar';
+import { Attribute, Class, SugarElement, Traverse } from '@ephox/sugar';
 
 import { UiFactoryBackstageProviders } from '../../backstage/Backstage';
 import { renderFormFieldWith, renderLabel } from '../alien/FieldLabeller';
@@ -59,7 +59,7 @@ const getDynamicSource = (initialData: Optional<string>, stream: boolean): IFram
 
 const renderIFrame = (spec: IframeSpec, providersBackstage: UiFactoryBackstageProviders, initialData: Optional<string>): SketchSpec => {
   const baseClass = 'tox-dialog__iframe';
-  const borderedClass = spec.border ? [ `${baseClass}--bordered` ] : [];
+  const containerBorderedClass = spec.border ? [ `tox-navobj-bordered` ] : [];
   const opaqueClass = spec.transparent ? [] : [ `${baseClass}--opaque` ];
 
   const attributes = {
@@ -73,6 +73,7 @@ const renderIFrame = (spec: IframeSpec, providersBackstage: UiFactoryBackstagePr
   const pLabel = spec.label.map((label) => renderLabel(label, providersBackstage));
 
   const factory = (newSpec: { uid: string }) => NavigableObject.craft(
+    Optional.from(containerBorderedClass),
     {
       // We need to use the part uid or the label and field won't be linked with ARIA
       uid: newSpec.uid,
@@ -81,7 +82,6 @@ const renderIFrame = (spec: IframeSpec, providersBackstage: UiFactoryBackstagePr
         attributes,
         classes: [
           baseClass,
-          ...borderedClass,
           ...opaqueClass
         ]
       },
@@ -89,6 +89,16 @@ const renderIFrame = (spec: IframeSpec, providersBackstage: UiFactoryBackstagePr
         Tabstopping.config({ }),
         Focusing.config({ }),
         RepresentingConfigs.withComp(initialData, sourcing.getValue, sourcing.setValue)
+      ]),
+      events: AlloyEvents.derive([
+        AlloyEvents.run(SystemEvents.focus(), (component, _simulatedEvent) => {
+          const parent = Traverse.parent(component.element).getOr(component.element) as SugarElement<Element>;
+          Class.add(parent, 'tox-navobj-focus');
+        }),
+        AlloyEvents.run(NativeEvents.focusout(), (component, _simulatedEvent) => {
+          const parent = Traverse.parent(component.element).getOr(component.element) as SugarElement<Element>;
+          Class.remove(parent, 'tox-navobj-focus');
+        })
       ])
     }
   );
