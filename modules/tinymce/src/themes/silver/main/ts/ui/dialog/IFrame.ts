@@ -92,12 +92,14 @@ const renderIFrame = (spec: IframeSpec, providersBackstage: UiFactoryBackstagePr
       ]),
       events: AlloyEvents.derive([
         AlloyEvents.run(SystemEvents.focus(), (component, _simulatedEvent) => {
-          const parent = Traverse.parent(component.element).getOr(component.element) as SugarElement<Element>;
-          Class.add(parent, 'tox-navobj-focus');
+          Traverse.parentElement(component.element).each((element) => {
+            Class.add(element, 'tox-navobj-focus');
+          });
         }),
         AlloyEvents.run(NativeEvents.focusout(), (component, _simulatedEvent) => {
-          const parent = Traverse.parent(component.element).getOr(component.element) as SugarElement<Element>;
-          Class.remove(parent, 'tox-navobj-focus');
+          Traverse.parentElement(component.element).each((element) => {
+            Class.remove(element, 'tox-navobj-focus');
+          });
         })
       ])
     }
